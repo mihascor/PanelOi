@@ -1,0 +1,36 @@
+PanelOi
+# База данных
+cd C:\sqlite
+.\sqlite3.exe C:\Users\PC\PanelOi\storage\db\PanelOi_db.db   # Открыть БД
+.schema futures_list                      # Посмотреть структуру БД
+
+Корень проекта 
+cd C:\Users\PC\PanelOi
+ 
+--------------------------Таблица------------------------------------
+futures_list - хранилище тикетов фьючи и акции (ручная сборка)
+CREATE TABLE "futures_list" (
+        "futures"       TEXT,
+        "paper" TEXT
+);
+sqlite>
+
+futures_oi - исторические значения открытого интереса разбитые на - даты, инструмент,  
+лица (юридические и физические), покупки и продажи.
+CREATE TABLE futures_oi (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    futures TEXT,          -- код из futures_list
+    paper TEXT,            -- человекочитаемое имя
+
+    tradedate DATE,        -- дата
+
+    FIZ_long INTEGER,
+    FIZ_short INTEGER,
+
+    YUR_long INTEGER,
+    YUR_short INTEGER,
+
+    UNIQUE(futures, tradedate)  -- защита от дублей
+);
+---------------------------------------------------------------------

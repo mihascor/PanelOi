@@ -1,0 +1,31 @@
+# Папки,файлы и их предназночение
+Использовать описания только при работе с конкретным файлом
+
+## Корень проекта
+  main.py - запускающий файл
+  make_backup.py - бекэнд проекта
+  requirements.txt - зависимости
+  .env - секреты
+  .gitignore - гит игнор
+
+## CORE
+  app\core\theme\dark_theme.py - Темная тема для всего проекта 
+  app\core\logging\logger_config.py - Логирование всего проекта
+
+## SERVICES
+
+
+## REPOSITORY
+
+
+## API
+
+
+## UI
+  app\ui\tabs\analysis_table_tab.py - Первая вкладка таблица для анализа (заглушка)
+  app\ui\tabs\system_control_tab.py - Пульт управления файлами (заглушка)
+  app\ui\windows\main_window.py - Главное окно 
+
+## STORAGE
+  storage\logs\app.log - логи со всего проекта
+  storage\logs\error.log - логи ошибок со всего проекта

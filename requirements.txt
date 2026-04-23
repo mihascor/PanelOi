@@ -1,0 +1,24 @@
+# UI
+PyQt6
+PyQt6-Charts
+
+# HTTP / API (MOEX)
+requests
+httpx
+
+# Data processing
+pandas
+numpy
+
+# DB layer
+sqlalchemy
+
+# Utils
+python-dotenv
+loguru
+
+# Parsing (если MOEX или доп. источники)
+beautifulsoup4
+lxml
+
+pyqtgraph

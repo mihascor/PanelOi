@@ -1,0 +1,262 @@
+# Нейминг (жёсткая спецификация для LLM)
+
+## 1. Общие правила
+
+- имя отражает роль, а не реализацию
+- один файл = одна ответственность
+- запрещены version-постфиксы (v2, final, new)
+- имя должно быть однозначным без контекста
+- не вводить новые паттерны именования без необходимости
+
+---
+
+## 2. Сущности (entity)
+
+Базовый список:
+
+- instrument
+- price
+- oi
+- signal
+
+Правила:
+
+- любое имя должно содержать entity
+- если сущность отсутствует → использовать ближайшую по смыслу
+- добавление новой entity допустимо, но должно быть явно зафиксировано в проекте
+
+---
+
+## 3. services (app/services)
+
+Формат файла:
+<action>_<entity>.py
+
+Допустимые action:
+
+- sync_      (получение и запись данных)
+- refresh_   (обновление состояния)
+- build_     (подготовка структуры данных)
+- calculate_ (расчёты)
+- load_*_to_ui (передача данных в UI)
+
+Примеры:
+
+- sync_price_history.py
+- refresh_oi_data.py
+- calculate_signals.py
+- load_price_to_ui.py
+
+Правила:
+
+- orchestration (координация логики)
+- вызывает: api, repository
+- формирует данные для UI (view-model)
+- запрещено:
+  - SQL
+  - UI код
+  - прямой доступ к storage
+
+---
+
+## 4. repository (app/repository)
+
+Формат файла:
+<entity>_repository.py
+
+Примеры:
+
+- instrument_repository.py
+- price_repository.py
+- oi_repository.py
+
+Методы:
+
+- get_*
+- insert_*
+- update_*
+- delete_*
+
+Правила:
+
+- только работа с БД
+- без бизнес-логики
+- без HTTP
+- единственная точка доступа к storage/db
+
+---
+
+## 5. api (app/api)
+
+Формат файла:
+<source>_client.py
+
+Пример:
+- moex_client.py
+
+Методы:
+
+- get_*
+
+Примеры:
+
+- get_price_history(ticker)
+- get_oi_data(ticker)
+
+Правила:
+
+- только HTTP/API логика
+- без бизнес-логики
+- без работы с БД
+
+---
+
+## 6. models (DTO слой)
+
+Формат:
+<entity>.py
+
+Примеры:
+
+- instrument.py
+- price.py
+- oi.py
+
+Назначение:
+
+- структуры данных (dataclass / DTO)
+
+---
+
+## 7. ui (app/ui)
+
+### tabs
+<entity>_tab.py
+
+### widgets
+<entity>_widget.py
+
+### windows
+- main_window.py
+- settings_window.py
+
+Правила:
+
+- только отображение
+- без бизнес-логики
+
+---
+
+## 8. core (app/core)
+
+Назначение:
+
+- общесистемные компоненты (логирование, тема, конфигурация)
+
+Правила:
+
+- не содержит бизнес-логики
+- используется всеми слоями
+- не зависит от services/repository/ui
+
+---
+
+## 9. storage
+
+Структура:
+
+storage/
+  db/
+    PanelOi_db.db
+  state/
+    last_run.json
+    last_price_update.json
+  cache/
+    signals.json
+  logs/
+
+Правила:
+
+- db → источник истины
+- state → состояние системы
+- cache → пересчитываемые данные
+- logs → логи
+- доступ к db только через repository
+
+---
+
+## 10. корень проекта
+
+Файлы:
+
+- make_backup.py
+- requirements.txt
+- .env
+
+Правила:
+
+- скрипты: <action>_<entity>.py
+- без абстрактных имен
+
+---
+
+## 11. функции
+
+Формат:
+<action>_<entity>_<detail>
+
+Примеры:
+
+- get_price_history_by_date()
+- calculate_signal_strength()
+
+Правила:
+
+- глагол + сущность + уточнение
+- избегать:
+  - process
+  - handle
+  - run
+
+---
+
+## 12. классы
+
+Формат:
+<Entity><Role>
+
+Примеры:
+
+- PriceRepository
+- MoexClient
+- SignalCalculator
+
+Правила:
+
+- PascalCase
+- привязка к entity обязательна
+
+---
+
+## 13. переменные
+
+Формат:
+<entity>_<detail>
+
+Примеры:
+
+- price_data
+- oi_value
+- instrument_list
+
+Правила:
+
+- snake_case
+- избегать абстрактных имен без контекста
+
+---
+
+## 14. ограничения
+
+- файл > 300 строк → делить
+- если имя сложно придумать → проблема архитектуры

@@ -1,0 +1,31 @@
+PanelOi
+├── app
+│   ├── api
+│   ├── core
+│   │   ├── logging
+│   │   │   └── logger_config.py
+│   │   └── theme
+│   │       └── dark_theme.py
+│   ├── models
+│   ├── repository
+│   ├── services
+│   └── ui
+│       ├── tabs
+│       │   ├── analysis_table_tab.py
+│       │   └── system_control_tab.py
+│       ├── widgets
+│       └── windows
+│           └── main_window.py
+├── storage
+│   ├── cache
+│   ├── db
+│   │   └── PanelOi_db.db
+│   ├── logs
+│   │   ├── app.log
+│   │   └── error.log
+│   └── state
+├── .env
+├── .gitignore
+├── main.py
+├── make_backup.py
+└── requirements.txt
