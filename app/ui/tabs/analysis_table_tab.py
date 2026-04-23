@@ -23,10 +23,6 @@ class TableTab(QWidget):
         # Пример заполнения
         self.table.setItem(0, 0, QTableWidgetItem("Test"))
 
-        # Кнопка (заглушка под будущие действия)
-        self.button = QPushButton("Load data")
-
         layout.addWidget(self.table)
-        layout.addWidget(self.button)
 
         self.setLayout(layout)

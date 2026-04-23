@@ -61,4 +61,52 @@ def get_dark_stylesheet() -> str:
         background: #3c3c3c;
         min-height: 20px;
     }
+
+    /* --- УБИРАЕМ БЕЛОЕ В ТАБЛИЦЕ --- */
+
+    QTableCornerButton::section {
+        background-color: #2d2d2d;
+        border: none;
+    }
+
+    QHeaderView {
+        background-color: #2d2d2d;
+    }
+
+    QHeaderView::section {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    /* вертикальные номера строк */
+    QTableView::verticalHeader {
+        background-color: #2d2d2d;
+    }
+    /* --- TABS (QTabWidget) --- */
+
+    QTabWidget::pane {
+        border: 1px solid #3c3c3c;
+        background-color: #1e1e1e;
+    }
+
+    /* сами вкладки */
+    QTabBar::tab {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        padding: 6px 12px;
+        margin-right: 2px;
+        border: 1px solid #3c3c3c;
+        border-bottom: none;
+    }
+
+    /* активная вкладка */
+    QTabBar::tab:selected {
+        background-color: #2a5270;
+        color: #ffffff;
+    }
+
+    /* при наведении */
+    QTabBar::tab:hover {
+        background-color: #3a3a3a;
+    }
     """
