@@ -1,17 +1,17 @@
 from PyQt6.QtWidgets import (
     QMainWindow,
     QWidget,
-    QVBoxLayout,
     QHBoxLayout,
-    QPushButton,
     QStackedWidget,
 )
 
-from app.ui.tabs.system_control_tab import ControlTab
-from app.ui.tabs.analysis_table_tab import TableTab
+from app.ui.sidebar.sidebar_widget import SidebarWidget
+from app.ui.pages.analytics_page import AnalyticsPage
+from app.ui.pages.oi_page import OiPage
+from app.ui.pages.price_page import PricePage
+from app.ui.pages.logs_page import LogsPage
 
 
-# --- Главное окно ---
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -19,49 +19,46 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Торгово-аналитическая платформа MS")
         self.setMinimumSize(1000, 600)
 
-        # --- Центральный виджет ---
+        # --- центральный виджет ---
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        main_layout = QVBoxLayout()
+        main_layout = QHBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
         central_widget.setLayout(main_layout)
 
-        # --- Верхняя панель ---
-        button_layout = QHBoxLayout()
+        # --- sidebar ---
+        self.sidebar = SidebarWidget()
+        self.sidebar.setFixedWidth(200)
 
-        self.table_button = QPushButton("Таблица - ОИ")
-        self.control_button = QPushButton("Пульт")
-
-        self.table_button.setCheckable(True)
-        self.control_button.setCheckable(True)
-
-        button_layout.addWidget(self.table_button)
-        button_layout.addWidget(self.control_button)
-        button_layout.addStretch()
-
-        main_layout.addLayout(button_layout)
-
-        # --- Стек вкладок ---
+        # --- страницы ---
         self.stack = QStackedWidget()
 
-        self.table_tab = TableTab()
-        self.control_tab = ControlTab()
+        self.analytics_page = AnalyticsPage()
+        self.oi_page = OiPage()
+        self.price_page = PricePage()
+        self.logs_page = LogsPage()
 
-        self.stack.addWidget(self.table_tab)   # index 0
-        self.stack.addWidget(self.control_tab) # index 1
+        self.stack.addWidget(self.analytics_page)  # 0
+        self.stack.addWidget(self.oi_page)         # 1
+        self.stack.addWidget(self.price_page)      # 2
+        self.stack.addWidget(self.logs_page)       # 3
 
+        # --- сборка ---
+        main_layout.addWidget(self.sidebar)
         main_layout.addWidget(self.stack)
 
-        # --- Связка кнопок ---
-        self.table_button.clicked.connect(lambda: self.switch_tab(0))
-        self.control_button.clicked.connect(lambda: self.switch_tab(1))
 
-        # --- Дефолт ---
-        self.switch_tab(0)
+        # --- связи ---
+        self.sidebar.analytics_button.clicked.connect(lambda: self.switch_page(0))
+        self.sidebar.oi_button.clicked.connect(lambda: self.switch_page(1))
+        self.sidebar.price_button.clicked.connect(lambda: self.switch_page(2))
+        self.sidebar.logs_button.clicked.connect(lambda: self.switch_page(3))
 
-    def switch_tab(self, index: int):
+        # --- дефолт ---
+        self.switch_page(0)
+
+    def switch_page(self, index: int):
         self.stack.setCurrentIndex(index)
-
-        # обновляем состояние кнопок
-        self.table_button.setChecked(index == 0)
-        self.control_button.setChecked(index == 1)

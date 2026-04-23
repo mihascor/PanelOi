@@ -109,4 +109,11 @@ def get_dark_stylesheet() -> str:
     QTabBar::tab:hover {
         background-color: #3a3a3a;
     }
+
+    /* --- SIDEBAR --- */
+
+    QWidget#sidebar {
+        border-right: 1px solid #555555;
+        background-color: #1e1e1e;
+    }
     """

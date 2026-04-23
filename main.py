@@ -25,6 +25,7 @@ def main():
     window.showMaximized() # запускаем в развернутом виде
     # window.show()        # для отладки в окне
 
+
     # включаем тёмный заголовок (Windows 10/11)
     try:
         hwnd = window.winId()
