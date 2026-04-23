@@ -10,7 +10,7 @@ PROJECT_DIR = Path(r"C:\Users\PC\PanelOi")
 BACKUP_DIR = PROJECT_DIR / "backups"
 TEMP_DIR = PROJECT_DIR / "_backup_temp"
 
-DB_FILE = PROJECT_DIR / "storage" / "PanelOi_db.db"
+DB_FILE = PROJECT_DIR / "storage" / "db" / "PanelOi_db.db"
 
 # =========================
 # ПРОВЕРКИ
