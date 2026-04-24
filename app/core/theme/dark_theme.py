@@ -116,4 +116,9 @@ def get_dark_stylesheet() -> str:
         border-right: 1px solid #555555;
         background-color: #1e1e1e;
     }
+
+    QTextEdit {
+        font-family: Consolas, monospace;
+        font-size: 16px;
+    }
     """

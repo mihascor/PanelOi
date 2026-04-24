@@ -16,6 +16,15 @@ class SidebarWidget(QWidget):
         self.price_button = QPushButton("Цены")
         self.logs_button = QPushButton("Логи")
 
+        # делаем переключаемыми
+        for btn in [
+            self.analytics_button,
+            self.oi_button,
+            self.price_button,
+            self.logs_button,
+        ]:
+            btn.setCheckable(True)        
+
         # добавляем в layout
         layout.addWidget(self.analytics_button)
         layout.addWidget(self.oi_button)

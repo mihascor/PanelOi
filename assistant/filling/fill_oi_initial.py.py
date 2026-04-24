@@ -13,6 +13,7 @@ import os
 import sqlite3
 import ssl
 from datetime import datetime
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -20,7 +21,8 @@ from dotenv import load_dotenv
 # =========================
 # CONFIG
 # =========================
-DB_PATH = r"C:\tap_ms\storage\tap_ms.db"
+BASE_DIR = Path(__file__).resolve().parents[2]
+DB_PATH = BASE_DIR / "storage" / "db" / "PanelOi_db.db"
 
 DATE_FROM = "2020-01-03"
 DATE_TILL = "2026-04-06"
@@ -28,7 +30,7 @@ DATE_TILL = "2026-04-06"
 # =========================
 # TOKEN
 # =========================
-load_dotenv()
+load_dotenv(BASE_DIR / ".env")
 TOKEN = os.getenv("TOKEN")
 
 if not TOKEN:

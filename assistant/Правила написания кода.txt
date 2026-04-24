@@ -61,6 +61,12 @@ Storage (SQLite)
 - пути всегда относительные
 
 ---
+## Путь к базе данных
+
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[2] / в зависимости от глубины
+DB_PATH = BASE_DIR / "storage" / "db" / "PanelOi_db.db"
 
 ## Логирование (обязательно)
 

@@ -22,10 +22,13 @@
 
 
 ## UI
-  app\ui\tabs\analysis_table_tab.py - Первая вкладка таблица для анализа (заглушка)
-  app\ui\tabs\system_control_tab.py - Пульт управления файлами (заглушка)
   app\ui\windows\main_window.py - Главное окно 
-
+  app\ui\sidebar\sidebar_widget.py - сайдбар меню
+  app\ui\pages\analytics_page.py - страница анализа
+  app\ui\pages\logs_page.py - страница логов
+  app\ui\pages\oi_page.py - страница ОИ
+  app\ui\pages\price_page.py - страница цены
+  
 ## STORAGE
   storage\logs\app.log - логи со всего проекта
   storage\logs\error.log - логи ошибок со всего проекта

@@ -18,9 +18,6 @@ PanelOi
 │       │   └── price_page.py
 │       ├── sidebar
 │       │   └── sidebar_widget.py
-│       ├── tabs
-│       │   ├── analysis_table_tab.py
-│       │   └── system_control_tab.py
 │       ├── widgets
 │       └── windows
 │           └── main_window.py

@@ -10,6 +10,7 @@ from app.ui.pages.analytics_page import AnalyticsPage
 from app.ui.pages.oi_page import OiPage
 from app.ui.pages.price_page import PricePage
 from app.ui.pages.logs_page import LogsPage
+from PyQt6.QtWidgets import QFrame
 
 
 class MainWindow(QMainWindow):
@@ -47,7 +48,13 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.logs_page)       # 3
 
         # --- сборка ---
+
+        self.divider = QFrame()
+        self.divider.setFixedWidth(1)
+        self.divider.setStyleSheet("background-color: #555555;")
+
         main_layout.addWidget(self.sidebar)
+        main_layout.addWidget(self.divider)
         main_layout.addWidget(self.stack)
 
 
@@ -62,3 +69,14 @@ class MainWindow(QMainWindow):
 
     def switch_page(self, index: int):
         self.stack.setCurrentIndex(index)
+
+        # сброс всех кнопок
+        buttons = [
+            self.sidebar.analytics_button,
+            self.sidebar.oi_button,
+            self.sidebar.price_button,
+            self.sidebar.logs_button,
+        ]
+
+        for i, btn in enumerate(buttons):
+            btn.setChecked(i == index)
