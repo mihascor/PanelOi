@@ -121,40 +121,4 @@ def get_dark_stylesheet() -> str:
         font-family: Consolas, monospace;
         font-size: 16px;
     }
-
-    /* --- QTableWidget (analytics) --- */
-
-    QTableWidget {
-        background-color: #1e1e1e;
-        alternate-background-color: #252525;
-        color: #ffffff;
-        gridline-color: #3a3a3a;
-        border: 1px solid #3a3a3a;
-    }
-
-    QTableWidget::item {
-        padding: 4px;
-    }
-
-    /* --- КНОПКИ В ТАБЛИЦЕ --- */
-
-    QTableWidget QPushButton {
-        background-color: #333333;
-        color: #ffffff;
-        border: 1px solid #555555;
-        border-radius: 4px;
-        padding: 4px 8px;
-        min-width: 90px;
-    }
-
-    QTableWidget QPushButton:hover {
-        background-color: #444444;
-    }
-
-    QTableWidget QPushButton:checked {
-        background-color: #8a6d1f;
-        color: #ffffff;
-        border: 1px solid #c9a227;
-        font-weight: bold;
-    }
     """

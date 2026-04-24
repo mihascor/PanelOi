@@ -106,6 +106,49 @@ class AnalyticsPage(QWidget):
 
         self.table.setAlternatingRowColors(True)
 
+        self.table.setStyleSheet(
+            """
+            QTableWidget {
+                background-color: #1e1e1e;
+                alternate-background-color: #252525;
+                color: #ffffff;
+                gridline-color: #3a3a3a;
+                border: 1px solid #3a3a3a;
+            }
+
+            QHeaderView::section {
+                background-color: #2b2b2b;
+                color: #ffffff;
+                font-weight: bold;
+                border: 1px solid #3a3a3a;
+                padding: 6px;
+            }
+
+            QTableWidget::item {
+                padding: 4px;
+            }
+
+            QPushButton {
+                background-color: #333333;
+                color: #ffffff;
+                border: 1px solid #555555;
+                border-radius: 4px;
+                padding: 4px 8px;
+                margin: 0px;
+            }
+
+            QPushButton:hover {
+                background-color: #444444;
+            }
+
+            QPushButton:checked {
+                background-color: #8a6d1f;
+                color: #ffffff;
+                border: 1px solid #c9a227;
+                font-weight: bold;
+            }
+            """
+        )
 
     def load_analytics_table(self) -> None:
         self.analytics_data = build_oi_analytics_data()

@@ -8,7 +8,9 @@ PanelOi
 │   │       └── dark_theme.py
 │   ├── models
 │   ├── repository
+│   │   └── oi_repository.py
 │   ├── services
+│   │   ├── build_oi_analytics.py
 │   │   ├── build_oi_summary.py
 │   │   └── load_logs_to_ui.py
 │   └── ui
@@ -30,6 +32,7 @@ PanelOi
 │   │   ├── app.log
 │   │   └── error.log
 │   └── state
+│       └── analytics_choice.json
 ├── .env
 ├── .gitignore
 ├── main.py
