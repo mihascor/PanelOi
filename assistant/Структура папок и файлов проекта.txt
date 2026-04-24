@@ -13,7 +13,8 @@
   app\core\logging\logger_config.py - Логирование всего проекта
 
 ## SERVICES
-
+  app\services\build_oi_summary.py - получение данных из бд для передачи в oi_page.py
+  app\services\load_logs_to_ui.py - подготовка файла app.log, для передачи в logs_page.py
 
 ## REPOSITORY
 

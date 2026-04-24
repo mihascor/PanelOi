@@ -66,3 +66,8 @@ storage/db/PanelOi_db.db
 ## Статус
 
 - БД создана
+- Создана главная панель main_window.py
+- Страница логов logs_page.py
+- страница ОИ oi_page.py
+- Проект размещен в Git
+- 

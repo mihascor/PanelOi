@@ -9,6 +9,7 @@ PanelOi
 │   ├── models
 │   ├── repository
 │   ├── services
+│   │   ├── build_oi_summary.py
 │   │   └── load_logs_to_ui.py
 │   └── ui
 │       ├── pages
