@@ -157,4 +157,10 @@ def get_dark_stylesheet() -> str:
         border: 1px solid #c9a227;
         font-weight: bold;
     }
+    # --- АНАЛИЗ ОИ ГРАФИКИ --- */
+    QLabel#analysisTitle {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: bold;
+    }
     """

@@ -4,7 +4,6 @@ from pathlib import Path
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QAbstractItemView,
-    QDialog,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -15,42 +14,11 @@ from PyQt6.QtWidgets import (
 )
 
 from app.services.build_oi_analytics import build_oi_analytics_data
+from app.ui.windows.analysis_window import AnalysisWindow
 
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 STATE_PATH = BASE_DIR / "storage" / "state" / "analytics_choice.json"
-
-
-class AnalysisWindow(QDialog):
-    def __init__(self, paper: str):
-        super().__init__()
-
-        self.setWindowTitle(f"Анализ: {paper}")
-
-        layout = QVBoxLayout()
-
-        title_label = QLabel(paper)
-        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title_label.setStyleSheet(
-            """
-            QLabel {
-                color: #ffffff;
-                font-size: 28px;
-                font-weight: bold;
-            }
-            """
-        )
-
-        layout.addWidget(title_label)
-        self.setLayout(layout)
-
-        self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #1e1e1e;
-            }
-            """
-        )
 
 
 class AnalyticsPage(QWidget):

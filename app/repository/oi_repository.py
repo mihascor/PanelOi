@@ -48,3 +48,19 @@ class OiRepository:
         except sqlite3.Error as error:
             logger.error(f"Ошибка чтения последних данных ОИ из базы: {error}")
             return []
+
+    def get_oi_by_paper(self, paper: str) -> list[dict]:
+        query = """
+            SELECT tradedate, FIZ_long, FIZ_short, YUR_long, YUR_short
+            FROM futures_oi
+            WHERE paper = ?
+            ORDER BY tradedate
+        """
+
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(query, (paper,))
+            rows = cursor.fetchall()
+
+        return [dict(row) for row in rows]

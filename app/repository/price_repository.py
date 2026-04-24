@@ -54,3 +54,19 @@ class PriceRepository:
 
         conn.close()
         return tickers
+    
+    def get_price_by_ticker(self, ticker: str) -> list[dict]:
+        query = """
+            SELECT date, high, low
+            FROM paper_price
+            WHERE ticker = ?
+            ORDER BY date
+        """
+
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(query, (ticker,))
+            rows = cursor.fetchall()
+
+        return [dict(row) for row in rows]
