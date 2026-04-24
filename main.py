@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QApplication
 from app.ui.windows.main_window import MainWindow
 from app.core.theme.dark_theme import get_dark_stylesheet
 from app.core.logging.logger_config import setup_logger
+from app.services.sync_price_history import PriceSyncService
 
 from loguru import logger
 
@@ -14,14 +15,15 @@ setup_logger()
 
 
 def main():
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv)    # создаём приложение
 
     # Тема
-    app.setStyleSheet(get_dark_stylesheet())
+    app.setStyleSheet(get_dark_stylesheet()) # устанавливаем темную тему
     logger.info("Торгово-аналитическая платформа MS запущена")
 
     # Главное окно
-    window = MainWindow()
+    window = MainWindow() # создаём главное окно
+    PriceSyncService().sync_price_history() # синхронизируем цены при запуске
     window.showMaximized() # запускаем в развернутом виде
     # window.show()        # для отладки в окне
 

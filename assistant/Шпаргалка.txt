@@ -2,7 +2,7 @@ PanelOi
 # База данных
 cd C:\sqlite
 .\sqlite3.exe C:\Users\PC\PanelOi\storage\db\PanelOi_db.db   # Открыть БД
-.schema futures_list                      # Посмотреть структуру БД
+.schema paper_price                                   # Посмотреть структуру БД
 
 Корень проекта 
 cd C:\Users\PC\PanelOi
@@ -33,4 +33,19 @@ CREATE TABLE futures_oi (
 
     UNIQUE(futures, tradedate)  -- защита от дублей
 );
+
+paper_price - исторические данные цен акций
+CREATE TABLE "paper_price" (
+        "id"    INTEGER,
+        "ticker"        TEXT,
+        "date"  DATE,
+        "open"  REAL,
+        "close" REAL,
+        "high"  REAL,
+        "low"   REAL,
+        "volume"        INTEGER,
+        PRIMARY KEY("id" AUTOINCREMENT)
+);
+CREATE UNIQUE INDEX idx_unique_ticker_date
+ON paper_price (ticker, date);
 ---------------------------------------------------------------------

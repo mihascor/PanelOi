@@ -15,11 +15,15 @@
 ## SERVICES
   app\services\build_oi_summary.py - получение данных из бд для передачи в oi_page.py
   app\services\load_logs_to_ui.py - подготовка файла app.log, для передачи в logs_page.py
+  app\services\build_oi_analytics.py - подготовка данных для таблицы в analytics_page.py
+  app/services/sync_price_history.py — определяет недостающие периоды и догружает цены по всем тикерам через API в БД
 
 ## REPOSITORY
-
+  app\repository\oi_repository.py - берем данные из таблицы futures_oi, передаем в build_oi_analytics.py
+  app/repository/price_repository.py — читает и записывает данные цен в БД (paper_price), включая последнюю дату по тикеру
 
 ## API
+  app/api/moex_client.py — делает HTTP-запросы к MOEX API и возвращает сырые данные свечей
 
 
 ## UI

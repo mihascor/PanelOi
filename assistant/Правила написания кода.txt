@@ -140,3 +140,10 @@ DB_PATH = BASE_DIR / "storage" / "db" / "PanelOi_db.db"
 6. Допускается:
    - локальные панели внутри страниц (левая панель действий)
    - вложенные уровни внутри страницы
+
+## Тема проекта для UI
+
+Настройка проекта в app\core\theme\dark_theme.py
+в main.py прописано:
+   from app.core.theme.dark_theme import get_dark_stylesheet
+   app.setStyleSheet(get_dark_stylesheet())
