@@ -138,7 +138,7 @@
 
     .row {
       display: grid;
-      grid-template-columns: minmax(110px, 42%) minmax(120px, 1fr);
+      grid-template-columns: minmax(110px, 36%) minmax(110px, 1fr) max-content;
       align-items: center;
       gap: 8px;
       min-height: 20px;
@@ -177,6 +177,14 @@
 
     .value.outside {
       color: var(--text);
+    }
+
+    .revenue {
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1;
+      white-space: nowrap;
+      text-align: right;
     }
 
     .empty {
@@ -222,7 +230,7 @@
       }
 
       .row {
-        grid-template-columns: minmax(105px, 40%) minmax(120px, 1fr);
+        grid-template-columns: minmax(105px, 36%) minmax(100px, 1fr) max-content;
       }
     }
   </style>
@@ -361,15 +369,20 @@
         const value = document.createElement("span");
         const inside = channel.share >= 5;
         value.className = `value ${inside ? "inside" : "outside"}`;
-        value.textContent = formatShare(channel.share);
+        value.textContent = `${formatShare(channel.share)}%`;
         if (!inside) {
           value.style.left = `calc(${Math.max(channel.share, 0)}% + 5px)`;
         }
+
+        const revenue = document.createElement("div");
+        revenue.className = "revenue";
+        revenue.textContent = `${formatMoney(channel.revenue)} руб`;
 
         track.appendChild(bar);
         track.appendChild(value);
         row.appendChild(label);
         row.appendChild(track);
+        row.appendChild(revenue);
         rows.appendChild(row);
       });
 
