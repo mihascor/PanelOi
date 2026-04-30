@@ -4,6 +4,7 @@ from app.services.build_oi_price_chart import build_oi_price_chart_data
 import pyqtgraph as pg
 import numpy as np
 
+# Окно анализа: графики ОИ и цены для выбранного paper
 class AnalysisWindow(QDialog):
     def __init__(self, paper: str):
         super().__init__()
@@ -54,9 +55,32 @@ class AnalysisWindow(QDialog):
         zero_line = pg.InfiniteLine(pos=0, angle=0, pen=pg.mkPen("gray"))
         oi_plot.addItem(zero_line)
 
+        # --- вертикальные линии курсора (отдельно для каждого графика) ---
+        cursor_line_price = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen("y"))
+        cursor_line_oi = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen("y"))
+
+        price_plot.addItem(cursor_line_price)
+        oi_plot.addItem(cursor_line_oi)
+
         # --- layout ---
         layout.addWidget(title_label)
         layout.addWidget(price_plot)
         layout.addWidget(oi_plot)
 
         self.setLayout(layout)
+
+        # --- движение мыши ---
+        def mouse_moved(pos):
+            if not price_plot.sceneBoundingRect().contains(pos):
+                return
+
+            mouse_point = price_plot.plotItem.vb.mapSceneToView(pos)
+            x = mouse_point.x()
+            cursor_line_price.setPos(x)
+            cursor_line_oi.setPos(x)
+
+        self.mouse_proxy = pg.SignalProxy(
+            price_plot.scene().sigMouseMoved,
+            rateLimit=60,
+            slot=lambda evt: mouse_moved(evt[0])
+        )

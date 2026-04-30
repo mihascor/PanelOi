@@ -17,6 +17,7 @@
   app\services\load_logs_to_ui.py - подготовка файла app.log, для передачи в logs_page.py
   app\services\build_oi_analytics.py - подготовка данных для таблицы в analytics_page.py
   app/services/sync_price_history.py — определяет недостающие периоды и догружает цены по всем тикерам через API в БД
+  app\services\build_oi_price_chart.py - Данные для графиков ОИ и цены 
 
 ## REPOSITORY
   app\repository\oi_repository.py - берем данные из таблицы futures_oi, передаем в build_oi_analytics.py
@@ -28,6 +29,7 @@
 
 ## UI
   app\ui\windows\main_window.py - Главное окно 
+  app\ui\windows\analysis_window.py - Окно анализа: графики ОИ и цены для выбранного paper
   app\ui\sidebar\sidebar_widget.py - сайдбар меню
   app\ui\pages\analytics_page.py - страница анализа
   app\ui\pages\logs_page.py - страница логов

@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Доли каналов привлечения по клиникам</title>
+  <style>
+    :root {
+      --dumskaya: #20a4c6;
+      --flandria: #e06f2f;
+      --moskva: #4f8f45;
+      --text: #202020;
+      --muted: #777;
+      --line: #e7e7e7;
+      --panel: #f7f7f7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 14px 14px 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    select, button {
+      min-height: 24px;
+      border: 1px solid #cfcfcf;
+      border-radius: 4px;
+      background: #fff;
+      color: var(--text);
+      font-size: 11px;
+      padding: 3px 7px;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button.active {
+      color: #fff;
+      background: #222;
+      border-color: #222;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border-radius: 5px;
+      padding: 7px 9px;
+    }
+
+    .metric-label {
+      margin-bottom: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .metric-value {
+      font-size: 14px;
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px 18px;
+      align-items: start;
+    }
+
+    .chart {
+      min-width: 0;
+      padding-top: 1px;
+      break-inside: avoid;
+    }
+
+    .chart-title {
+      margin: 0 0 8px;
+      color: #000;
+      font-size: 20px;
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .chart-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: -3px 0 8px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .rows {
+      display: grid;
+      gap: 4px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(110px, 42%) minmax(120px, 1fr);
+      align-items: center;
+      gap: 8px;
+      min-height: 20px;
+    }
+
+    .label {
+      font-size: 11px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 20px;
+      min-width: 0;
+    }
+
+    .bar {
+      height: 100%;
+      min-width: 1px;
+    }
+
+    .value {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .value.inside {
+      left: 5px;
+      color: #fff;
+    }
+
+    .value.outside {
+      color: var(--text);
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 24px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      color: #888;
+      font-size: 10px;
+    }
+
+    @media (max-width: 1180px) {
+      .charts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 12px 10px 24px;
+      }
+
+      .topbar {
+        display: block;
+      }
+
+      .controls {
+        justify-content: flex-start;
+        margin-top: 9px;
+      }
+
+      .summary,
+      .charts {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-title {
+        font-size: 18px;
+      }
+
+      .row {
+        grid-template-columns: minmax(105px, 40%) minmax(120px, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <h1>Доли каналов привлечения по клиникам</h1>
+      <div class="controls">
+        <select id="clinicFilter" aria-label="Клиника"></select>
+        <select id="yearFilter" aria-label="Год"></select>
+        <button id="allButton" type="button">Все графики</button>
+      </div>
+    </div>
+
+    <section class="summary" id="summary"></section>
+    <section class="charts" id="charts"></section>
+    <div class="footer">Сформировано из CSV-файлов папки data</div>
+  </main>
+
+  <script>
+    const reports = [{"id":"dumskaya_2022","clinic":"dumskaya","year":"2022","totalRevenue":8679139.0,"days":5,"channels":[{"channel":"Канал не указан","revenue":5523448.0,"share":63.64},{"channel":"Другой филиал клиники","revenue":1102543.0,"share":12.7},{"channel":"Постоянный клиент","revenue":720580.0,"share":8.3},{"channel":"Инстаграм (лента)","revenue":623287.0,"share":7.18},{"channel":"КЛИНИКУ порекомендовали","revenue":360175.0,"share":4.15},{"channel":"ВЕРНОСТЬ","revenue":95345.0,"share":1.1},{"channel":"Интернет (Яндекс; Google)","revenue":66820.0,"share":0.77},{"channel":"Инстаграм блогера","revenue":61516.0,"share":0.71},{"channel":"ВРАЧА порекомендовали","revenue":60513.0,"share":0.7},{"channel":"сотрудник","revenue":51160.0,"share":0.59},{"channel":"Реферальная программа","revenue":7520.0,"share":0.09},{"channel":"Агрегаторы (2gis; Zoon)","revenue":3432.0,"share":0.04},{"channel":"Интернет (Яндекс","revenue":2800.0,"share":0.03}]},{"id":"dumskaya_2023","clinic":"dumskaya","year":"2023","totalRevenue":4660688.0,"days":3,"channels":[{"channel":"Канал не указан","revenue":2144100.0,"share":46.0},{"channel":"Постоянный клиент","revenue":871182.0,"share":18.69},{"channel":"Другой филиал клиники","revenue":864571.0,"share":18.55},{"channel":"Инстаграм (лента)","revenue":500000.0,"share":10.73},{"channel":"КЛИНИКУ порекомендовали","revenue":140305.0,"share":3.01},{"channel":"ВЕРНОСТЬ","revenue":59730.0,"share":1.28},{"channel":"Интернет (Яндекс; Google)","revenue":21450.0,"share":0.46},{"channel":"Инстаграм (таргетированная реклама)","revenue":20700.0,"share":0.44},{"channel":"Наружная реклама","revenue":13200.0,"share":0.28},{"channel":"Интернет (Яндекс","revenue":11350.0,"share":0.24},{"channel":"Агрегаторы (2gis; Zoon)","revenue":9000.0,"share":0.19},{"channel":"ВРАЧА порекомендовали","revenue":4600.0,"share":0.1},{"channel":"сотрудник","revenue":500.0,"share":0.01}]},{"id":"dumskaya_2024","clinic":"dumskaya","year":"2024","totalRevenue":13422290.0,"days":7,"channels":[{"channel":"Канал не указан","revenue":4166946.0,"share":31.04},{"channel":"Постоянный клиент","revenue":3157888.0,"share":23.53},{"channel":"КЛИНИКУ порекомендовали","revenue":2099837.0,"share":15.64},{"channel":"Интернет (Яндекс","revenue":1050900.0,"share":7.83},{"channel":"Другой филиал клиники","revenue":1049831.0,"share":7.82},{"channel":"ВЕРНОСТЬ","revenue":459530.0,"share":3.42},{"channel":"Инстаграм (лента)","revenue":451720.0,"share":3.37},{"channel":"Инстаграм блогера","revenue":298590.0,"share":2.22},{"channel":"Подарочный сертификат","revenue":114090.0,"share":0.85},{"channel":"Инстаграм (таргетированная реклама)","revenue":108750.0,"share":0.81},{"channel":"Google)","revenue":102400.0,"share":0.76},{"channel":"Карты (Яндекс","revenue":78950.0,"share":0.59},{"channel":"Интернет (Яндекс; Google)","revenue":70030.0,"share":0.52},{"channel":"Наружная реклама","revenue":69750.0,"share":0.52},{"channel":"ВРАЧА порекомендовали","revenue":47450.0,"share":0.35},{"channel":"Агрегаторы (2gis","revenue":36950.0,"share":0.28},{"channel":"google)","revenue":19400.0,"share":0.14},{"channel":"Яндекс реклама","revenue":16960.0,"share":0.13},{"channel":"Агрегаторы (2gis; Zoon)","revenue":8720.0,"share":0.06},{"channel":"сотрудник","revenue":6008.0,"share":0.04},{"channel":"Реферальная программа","revenue":3420.0,"share":0.03},{"channel":"Другое","revenue":3000.0,"share":0.02},{"channel":"Партнерский сертификат","revenue":1170.0,"share":0.01}]},{"id":"dumskaya_2025","clinic":"dumskaya","year":"2025","totalRevenue":53613925.5,"days":30,"channels":[{"channel":"Канал не указан","revenue":13263373.0,"share":24.74},{"channel":"КЛИНИКУ порекомендовали","revenue":12231753.0,"share":22.81},{"channel":"Постоянный клиент","revenue":8767736.0,"share":16.35},{"channel":"Другой филиал клиники","revenue":4984912.0,"share":9.3},{"channel":"Интернет (Яндекс","revenue":3485713.0,"share":6.5},{"channel":"Инстаграм (лента)","revenue":1891175.0,"share":3.53},{"channel":"ВРАЧА порекомендовали","revenue":1757378.0,"share":3.28},{"channel":"Инстаграм блогера","revenue":1604736.0,"share":2.99},{"channel":"Реферальная программа","revenue":1388492.0,"share":2.59},{"channel":"ВЕРНОСТЬ","revenue":908404.0,"share":1.69},{"channel":"Google)","revenue":736511.0,"share":1.37},{"channel":"Telegram канал","revenue":302540.0,"share":0.56},{"channel":"Интернет (Яндекс; Google)","revenue":273740.0,"share":0.51},{"channel":"Блогер партнер Instagram","revenue":239660.0,"share":0.45},{"channel":"Наружная реклама","revenue":234640.0,"share":0.44},{"channel":"Без связи с пациентом","revenue":185000.0,"share":0.35},{"channel":"Карты (Яндекс","revenue":179400.0,"share":0.33},{"channel":"сотрудник","revenue":175767.0,"share":0.33},{"channel":"Инстаграм (таргетированная реклама)","revenue":169650.0,"share":0.32},{"channel":"Другое","revenue":164355.0,"share":0.31},{"channel":"Подарочный сертификат","revenue":125460.5,"share":0.23},{"channel":"друг сотрудника","revenue":123180.0,"share":0.23},{"channel":"Яндекс реклама","revenue":98500.0,"share":0.18},{"channel":"Telegram реклама","revenue":84290.0,"share":0.16},{"channel":"Партнерский сертификат","revenue":39500.0,"share":0.07},{"channel":"Вконтакте","revenue":29100.0,"share":0.05},{"channel":"Агрегаторы (2gis; Zoon)","revenue":28500.0,"share":0.05},{"channel":"Официальный сайт производителя","revenue":27000.0,"share":0.05},{"channel":"google)","revenue":24160.0,"share":0.05},{"channel":"Telegram блогера","revenue":22600.0,"share":0.04},{"channel":"Медицинский агрегатор (dokdok; продокторов; напоправку и рп)","revenue":17000.0,"share":0.03},{"channel":"Агрегаторы (2gis","revenue":13500.0,"share":0.03},{"channel":"Медицинский агрегатор (dokdok","revenue":12000.0,"share":0.02},{"channel":"Facebook","revenue":8500.0,"share":0.02},{"channel":"youtube","revenue":7400.0,"share":0.01},{"channel":"СМИ печатные журналы (Аэрофлот; Сапсан)","revenue":4200.0,"share":0.01},{"channel":"Прочие интернет ресурсы (little one","revenue":4100.0,"share":0.01}]},{"id":"dumskaya_2026","clinic":"dumskaya","year":"2026","totalRevenue":10537832.0,"days":6,"channels":[{"channel":"Постоянный клиент","revenue":2080413.0,"share":19.74},{"channel":"Канал не указан","revenue":2076520.0,"share":19.71},{"channel":"КЛИНИКУ порекомендовали","revenue":1790032.0,"share":16.99},{"channel":"Реферальная программа","revenue":910400.0,"share":8.64},{"channel":"Другой филиал клиники","revenue":811420.0,"share":7.7},{"channel":"Интернет (Яндекс","revenue":557815.0,"share":5.29},{"channel":"Интернет (Яндекс; Google)","revenue":407150.0,"share":3.86},{"channel":"Инстаграм (лента)","revenue":399883.0,"share":3.79},{"channel":"ВРАЧА порекомендовали","revenue":351785.0,"share":3.34},{"channel":"Инстаграм блогера","revenue":221980.0,"share":2.11},{"channel":"ВЕРНОСТЬ","revenue":149400.0,"share":1.42},{"channel":"Наружная реклама","revenue":125000.0,"share":1.19},{"channel":"друг сотрудника","revenue":114210.0,"share":1.08},{"channel":"Карты (Яндекс","revenue":58300.0,"share":0.55},{"channel":"Агрегаторы (2gis; Zoon)","revenue":54690.0,"share":0.52},{"channel":"google)","revenue":52000.0,"share":0.49},{"channel":"Подарочный сертификат","revenue":49300.0,"share":0.47},{"channel":"Блогер партнер Instagram","revenue":49270.0,"share":0.47},{"channel":"СМИ печатные журналы (Аэрофлот; Сапсан)","revenue":49000.0,"share":0.46},{"channel":"Telegram канал","revenue":43000.0,"share":0.41},{"channel":"Партнерский сертификат","revenue":35550.0,"share":0.34},{"channel":"Без связи с пациентом","revenue":30000.0,"share":0.28},{"channel":"Инстаграм (таргетированная реклама)","revenue":22800.0,"share":0.22},{"channel":"Яндекс реклама","revenue":22000.0,"share":0.21},{"channel":"Google)","revenue":20990.0,"share":0.2},{"channel":"сотрудник","revenue":14260.0,"share":0.14},{"channel":"Официальный сайт производителя","revenue":12000.0,"share":0.11},{"channel":"Telegram реклама","revenue":11664.0,"share":0.11},{"channel":"продокторов","revenue":7500.0,"share":0.07},{"channel":"Другое","revenue":6000.0,"share":0.06},{"channel":"Карты (Яндекс; Прочие интернет ресурсы (little one; портал здоровье и т.д)","revenue":3500.0,"share":0.03}]},{"id":"flandria_2024","clinic":"flandria","year":"2024","totalRevenue":1223657.0,"days":2,"channels":[{"channel":"сотрудник","revenue":508646.0,"share":41.57},{"channel":"Другой филиал клиники","revenue":262200.0,"share":21.43},{"channel":"КЛИНИКУ порекомендовали","revenue":127150.0,"share":10.39},{"channel":"Интернет (Яндекс","revenue":79200.0,"share":6.47},{"channel":"ВЕРНОСТЬ","revenue":51871.0,"share":4.24},{"channel":"Инстаграм блогера","revenue":51700.0,"share":4.23},{"channel":"Инстаграм (лента)","revenue":49950.0,"share":4.08},{"channel":"Постоянный клиент","revenue":42300.0,"share":3.46},{"channel":"Интернет (Яндекс; Google)","revenue":33750.0,"share":2.76},{"channel":"Канал не указан","revenue":16890.0,"share":1.38}]},{"id":"flandria_2025","clinic":"flandria","year":"2025","totalRevenue":9273911.0,"days":15,"channels":[{"channel":"КЛИНИКУ порекомендовали","revenue":2789489.0,"share":30.08},{"channel":"Другой филиал клиники","revenue":1654620.0,"share":17.84},{"channel":"ВРАЧА порекомендовали","revenue":1027152.0,"share":11.08},{"channel":"Интернет (Яндекс","revenue":844489.0,"share":9.11},{"channel":"ВЕРНОСТЬ","revenue":574480.0,"share":6.19},{"channel":"Постоянный клиент","revenue":538230.0,"share":5.8},{"channel":"Инстаграм (лента)","revenue":469218.0,"share":5.06},{"channel":"Инстаграм блогера","revenue":360540.0,"share":3.89},{"channel":"Наружная реклама","revenue":251601.0,"share":2.71},{"channel":"Канал не указан","revenue":171265.0,"share":1.85},{"channel":"Карты (Яндекс","revenue":98409.0,"share":1.06},{"channel":"Google)","revenue":73590.0,"share":0.79},{"channel":"Инстаграм (таргетированная реклама)","revenue":68250.0,"share":0.74},{"channel":"Другое","revenue":60935.0,"share":0.66},{"channel":"Партнерский сертификат","revenue":60000.0,"share":0.65},{"channel":"Реферальная программа","revenue":51280.0,"share":0.55},{"channel":"сотрудник","revenue":43243.0,"share":0.47},{"channel":"Интернет (Яндекс; Google)","revenue":40300.0,"share":0.43},{"channel":"Мероприятия","revenue":37860.0,"share":0.41},{"channel":"Подарочный сертификат","revenue":28480.0,"share":0.31},{"channel":"Без связи с пациентом","revenue":15980.0,"share":0.17},{"channel":"Блогер партнер Instagram","revenue":14500.0,"share":0.16}]},{"id":"flandria_2026","clinic":"flandria","year":"2026","totalRevenue":10463447.0,"days":17,"channels":[{"channel":"КЛИНИКУ порекомендовали","revenue":2681338.0,"share":25.63},{"channel":"Другой филиал клиники","revenue":2073684.0,"share":19.82},{"channel":"ВРАЧА порекомендовали","revenue":1572547.0,"share":15.03},{"channel":"Постоянный клиент","revenue":577857.0,"share":5.52},{"channel":"Инстаграм блогера","revenue":576525.0,"share":5.51},{"channel":"Инстаграм (лента)","revenue":514930.0,"share":4.92},{"channel":"Канал не указан","revenue":488040.0,"share":4.66},{"channel":"ВЕРНОСТЬ","revenue":392420.0,"share":3.75},{"channel":"Интернет (Яндекс","revenue":342275.0,"share":3.27},{"channel":"Наружная реклама","revenue":223340.0,"share":2.13},{"channel":"Реферальная программа","revenue":221800.0,"share":2.12},{"channel":"Другое","revenue":160527.0,"share":1.53},{"channel":"Инстаграм (таргетированная реклама)","revenue":113952.0,"share":1.09},{"channel":"Интернет (Яндекс; Google)","revenue":104220.0,"share":1.0},{"channel":"Карты (Яндекс","revenue":68600.0,"share":0.66},{"channel":"Агрегаторы (2gis","revenue":61440.0,"share":0.59},{"channel":"Без связи с пациентом","revenue":60000.0,"share":0.57},{"channel":"Telegram блогера","revenue":46000.0,"share":0.44},{"channel":"Яндекс реклама","revenue":45000.0,"share":0.43},{"channel":"Google)","revenue":33200.0,"share":0.32},{"channel":"друг сотрудника","revenue":22305.0,"share":0.21},{"channel":"Агрегаторы (2gis; Zoon)","revenue":22000.0,"share":0.21},{"channel":"Блогер партнер Instagram","revenue":21400.0,"share":0.2},{"channel":"Мероприятия","revenue":10000.0,"share":0.1},{"channel":"Подарочный сертификат","revenue":6100.0,"share":0.06},{"channel":"сотрудник","revenue":5546.0,"share":0.05},{"channel":"Карты (Яндекс; Прочие интернет ресурсы (little one; портал здоровье и т.д)","revenue":5500.0,"share":0.05},{"channel":"Официальный сайт производителя","revenue":4700.0,"share":0.04},{"channel":"youtube","revenue":4351.0,"share":0.04},{"channel":"Telegram реклама","revenue":3850.0,"share":0.04}]},{"id":"moskva_2023","clinic":"moskva","year":"2023","totalRevenue":1357893.0,"days":2,"channels":[{"channel":"Канал не указан","revenue":762737.0,"share":56.17},{"channel":"Интернет (Яндекс","revenue":236126.0,"share":17.39},{"channel":"Инстаграм (лента)","revenue":116700.0,"share":8.59},{"channel":"Инстаграм блогера","revenue":97400.0,"share":7.17},{"channel":"Google)","revenue":38835.0,"share":2.86},{"channel":"Другой филиал клиники","revenue":28420.0,"share":2.09},{"channel":"ВЕРНОСТЬ","revenue":24250.0,"share":1.79},{"channel":"КЛИНИКУ порекомендовали","revenue":20500.0,"share":1.51},{"channel":"Прочие интернет ресурсы (little one","revenue":15000.0,"share":1.1},{"channel":"Другое","revenue":6700.0,"share":0.49},{"channel":"Карты (Яндекс","revenue":5700.0,"share":0.42},{"channel":"Постоянный клиент","revenue":5500.0,"share":0.41},{"channel":"сотрудник","revenue":25.0,"share":0.0}]},{"id":"moskva_2024","clinic":"moskva","year":"2024","totalRevenue":4268749.0,"days":5,"channels":[{"channel":"КЛИНИКУ порекомендовали","revenue":1564242.0,"share":36.64},{"channel":"Инстаграм блогера","revenue":869268.0,"share":20.36},{"channel":"ВЕРНОСТЬ","revenue":376858.0,"share":8.83},{"channel":"Интернет (Яндекс","revenue":245707.0,"share":5.76},{"channel":"Инстаграм (лента)","revenue":241603.0,"share":5.66},{"channel":"Другой филиал клиники","revenue":156837.0,"share":3.67},{"channel":"ВРАЧА порекомендовали","revenue":152060.0,"share":3.56},{"channel":"Google)","revenue":149559.0,"share":3.5},{"channel":"Канал не указан","revenue":147926.0,"share":3.47},{"channel":"Инстаграм (таргетированная реклама)","revenue":103800.0,"share":2.43},{"channel":"сотрудник","revenue":85037.0,"share":1.99},{"channel":"Карты (Яндекс","revenue":77702.0,"share":1.82},{"channel":"Прочие интернет ресурсы (little one","revenue":63900.0,"share":1.5},{"channel":"Подарочный сертификат","revenue":14850.0,"share":0.35},{"channel":"Агрегаторы (2gis","revenue":14400.0,"share":0.34},{"channel":"Без связи с пациентом","revenue":5000.0,"share":0.12}]},{"id":"moskva_2025","clinic":"moskva","year":"2025","totalRevenue":25101710.0,"days":31,"channels":[{"channel":"КЛИНИКУ порекомендовали","revenue":5968054.0,"share":23.78},{"channel":"Инстаграм блогера","revenue":3395538.0,"share":13.53},{"channel":"Инстаграм (лента)","revenue":3282095.0,"share":13.08},{"channel":"ВЕРНОСТЬ","revenue":2857513.0,"share":11.38},{"channel":"Интернет (Яндекс","revenue":2730980.0,"share":10.88},{"channel":"ВРАЧА порекомендовали","revenue":1290535.0,"share":5.14},{"channel":"Google)","revenue":1131164.0,"share":4.51},{"channel":"Другой филиал клиники","revenue":915095.0,"share":3.65},{"channel":"Telegram блогера","revenue":579921.0,"share":2.31},{"channel":"Карты (Яндекс","revenue":511240.0,"share":2.04},{"channel":"Канал не указан","revenue":352184.0,"share":1.4},{"channel":"Прочие интернет ресурсы (little one","revenue":260690.0,"share":1.04},{"channel":"Без связи с пациентом","revenue":237300.0,"share":0.95},{"channel":"Telegram канал","revenue":231046.0,"share":0.92},{"channel":"Мероприятия","revenue":224980.0,"share":0.9},{"channel":"Подарочный сертификат","revenue":199970.0,"share":0.8},{"channel":"Интернет (Яндекс; Google)","revenue":149040.0,"share":0.59},{"channel":"Реферальная программа","revenue":139430.0,"share":0.56},{"channel":"Агрегаторы (2gis","revenue":133218.0,"share":0.53},{"channel":"Другое","revenue":90270.0,"share":0.36},{"channel":"Официальный сайт производителя","revenue":74110.0,"share":0.3},{"channel":"Партнерский сертификат","revenue":73576.0,"share":0.29},{"channel":"Наружная реклама","revenue":63750.0,"share":0.25},{"channel":"Блогер партнер Instagram","revenue":46390.0,"share":0.18},{"channel":"сотрудник","revenue":45391.0,"share":0.18},{"channel":"Telegram реклама","revenue":33580.0,"share":0.13},{"channel":"Постоянный клиент","revenue":29585.0,"share":0.12},{"channel":"Яндекс реклама","revenue":23035.0,"share":0.09},{"channel":"Инстаграм (таргетированная реклама)","revenue":10350.0,"share":0.04},{"channel":"Блогер партнер Telegram","revenue":8800.0,"share":0.04},{"channel":"друг сотрудника","revenue":6480.0,"share":0.03},{"channel":"google)","revenue":3700.0,"share":0.01},{"channel":"youtube","revenue":2700.0,"share":0.01}]},{"id":"moskva_2026","clinic":"moskva","year":"2026","totalRevenue":16447885.0,"days":19,"channels":[{"channel":"КЛИНИКУ порекомендовали","revenue":3580039.0,"share":21.77},{"channel":"ВЕРНОСТЬ","revenue":2116904.0,"share":12.87},{"channel":"Инстаграм блогера","revenue":1741394.0,"share":10.59},{"channel":"ВРАЧА порекомендовали","revenue":1512480.0,"share":9.2},{"channel":"Инстаграм (лента)","revenue":1449268.0,"share":8.81},{"channel":"Интернет (Яндекс; Google)","revenue":1088588.0,"share":6.62},{"channel":"Другой филиал клиники","revenue":931455.0,"share":5.66},{"channel":"Интернет (Яндекс","revenue":922665.0,"share":5.61},{"channel":"Реферальная программа","revenue":490620.0,"share":2.98},{"channel":"Google)","revenue":463552.0,"share":2.82},{"channel":"Telegram блогера","revenue":324740.0,"share":1.97},{"channel":"Канал не указан","revenue":297751.0,"share":1.81},{"channel":"Telegram канал","revenue":295950.0,"share":1.8},{"channel":"Карты (Яндекс","revenue":216544.0,"share":1.32},{"channel":"Подарочный сертификат","revenue":207710.0,"share":1.26},{"channel":"Карты (Яндекс; Прочие интернет ресурсы (little one; портал здоровье и т.д)","revenue":184330.0,"share":1.12},{"channel":"youtube","revenue":169736.0,"share":1.03},{"channel":"Партнерский сертификат","revenue":137262.0,"share":0.83},{"channel":"Другое","revenue":102310.0,"share":0.62},{"channel":"Мероприятия","revenue":69550.0,"share":0.42},{"channel":"Блогер партнер Instagram","revenue":42880.0,"share":0.26},{"channel":"Агрегаторы (2gis","revenue":31895.0,"share":0.19},{"channel":"Наружная реклама","revenue":22500.0,"share":0.14},{"channel":"СМИ интернет (Фонтанка; красота и здоровье и т.д.)","revenue":18200.0,"share":0.11},{"channel":"сотрудник","revenue":13751.0,"share":0.08},{"channel":"Постоянный клиент","revenue":6851.0,"share":0.04},{"channel":"Telegram реклама","revenue":6060.0,"share":0.04},{"channel":"google)","revenue":2900.0,"share":0.02}]}];
+
+    const clinicColors = {
+      dumskaya: getCss("--dumskaya"),
+      flandria: getCss("--flandria"),
+      moskva: getCss("--moskva")
+    };
+
+    const clinicFilter = document.getElementById("clinicFilter");
+    const yearFilter = document.getElementById("yearFilter");
+    const allButton = document.getElementById("allButton");
+    const charts = document.getElementById("charts");
+    const summary = document.getElementById("summary");
+
+    function getCss(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function unique(values) {
+      return Array.from(new Set(values)).sort();
+    }
+
+    function formatShare(value) {
+      return new Intl.NumberFormat("ru-RU", {
+        minimumFractionDigits: value < 1 ? 2 : 0,
+        maximumFractionDigits: value < 10 ? 2 : 1
+      }).format(value);
+    }
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("ru-RU", {
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function option(value, label) {
+      const item = document.createElement("option");
+      item.value = value;
+      item.textContent = label;
+      return item;
+    }
+
+    function fillFilters() {
+      clinicFilter.appendChild(option("all", "Все клиники"));
+      unique(reports.map(report => report.clinic)).forEach(clinic => {
+        clinicFilter.appendChild(option(clinic, clinic));
+      });
+
+      yearFilter.appendChild(option("all", "Все годы"));
+      unique(reports.map(report => report.year)).forEach(year => {
+        yearFilter.appendChild(option(year, year));
+      });
+    }
+
+    function filteredReports() {
+      const clinic = clinicFilter.value;
+      const year = yearFilter.value;
+      return reports.filter(report => {
+        return (clinic === "all" || report.clinic === clinic)
+          && (year === "all" || report.year === year);
+      });
+    }
+
+    function renderSummary(items) {
+      const totalRevenue = items.reduce((sum, report) => sum + report.totalRevenue, 0);
+      const clinicCount = unique(items.map(report => report.clinic)).length;
+      summary.innerHTML = "";
+
+      [
+        ["Графиков", items.length],
+        ["Клиник", clinicCount],
+        ["Выручка", formatMoney(totalRevenue)]
+      ].forEach(([label, value]) => {
+        const card = document.createElement("div");
+        card.className = "metric";
+        card.innerHTML = `<div class="metric-label">${label}</div><div class="metric-value">${value}</div>`;
+        summary.appendChild(card);
+      });
+    }
+
+    function renderChart(report) {
+      const color = clinicColors[report.clinic] || "#333";
+      const section = document.createElement("article");
+      section.className = "chart";
+
+      const title = document.createElement("h2");
+      title.className = "chart-title";
+      title.textContent = `${report.clinic}_${report.year}`;
+      section.appendChild(title);
+
+      const meta = document.createElement("div");
+      meta.className = "chart-meta";
+      meta.innerHTML = `<span>Выручка: ${formatMoney(report.totalRevenue)}</span><span>Дней: ${report.days}</span>`;
+      section.appendChild(meta);
+
+      const rows = document.createElement("div");
+      rows.className = "rows";
+
+      report.channels.forEach(channel => {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = channel.channel;
+
+        const track = document.createElement("div");
+        track.className = "bar-track";
+
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.width = `${Math.max(channel.share, 0)}%`;
+        bar.style.backgroundColor = color;
+
+        const value = document.createElement("span");
+        const inside = channel.share >= 5;
+        value.className = `value ${inside ? "inside" : "outside"}`;
+        value.textContent = formatShare(channel.share);
+        if (!inside) {
+          value.style.left = `calc(${Math.max(channel.share, 0)}% + 5px)`;
+        }
+
+        track.appendChild(bar);
+        track.appendChild(value);
+        row.appendChild(label);
+        row.appendChild(track);
+        rows.appendChild(row);
+      });
+
+      section.appendChild(rows);
+      return section;
+    }
+
+    function render() {
+      const items = filteredReports();
+      allButton.classList.toggle("active", clinicFilter.value === "all" && yearFilter.value === "all");
+      renderSummary(items);
+      charts.innerHTML = "";
+
+      if (!items.length) {
+        charts.innerHTML = '<div class="empty">Нет данных для выбранного фильтра.</div>';
+        return;
+      }
+
+      items.forEach(report => charts.appendChild(renderChart(report)));
+    }
+
+    fillFilters();
+    clinicFilter.addEventListener("change", render);
+    yearFilter.addEventListener("change", render);
+    allButton.addEventListener("click", () => {
+      clinicFilter.value = "all";
+      yearFilter.value = "all";
+      render();
+    });
+    render();
+  </script>
+</body>
+</html>

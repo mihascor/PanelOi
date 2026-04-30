@@ -56,10 +56,46 @@ ui (отображение)
 
 storage/db/PanelOi_db.db
 
-Основные таблицы:
+futures_list - хранилище тикетов фьючи и акции (ручная сборка)
+CREATE TABLE "futures_list" (
+        "futures"       TEXT,
+        "paper" TEXT
+);
+sqlite>
 
-- futures_list
-- futures_oi
+futures_oi - исторические значения открытого интереса разбитые на - даты, инструмент,  
+лица (юридические и физические), покупки и продажи.
+CREATE TABLE futures_oi (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    futures TEXT,          -- код из futures_list
+    paper TEXT,            -- человекочитаемое имя
+
+    tradedate DATE,        -- дата
+
+    FIZ_long INTEGER,
+    FIZ_short INTEGER,
+
+    YUR_long INTEGER,
+    YUR_short INTEGER,
+
+    UNIQUE(futures, tradedate)  -- защита от дублей
+);
+
+paper_price - исторические данные цен акций
+CREATE TABLE "paper_price" (
+        "id"    INTEGER,
+        "ticker"        TEXT,
+        "date"  DATE,
+        "open"  REAL,
+        "close" REAL,
+        "high"  REAL,
+        "low"   REAL,
+        "volume"        INTEGER,
+        PRIMARY KEY("id" AUTOINCREMENT)
+);
+CREATE UNIQUE INDEX idx_unique_ticker_date
+ON paper_price (ticker, date);
 
 ---
 
@@ -72,4 +108,5 @@ storage/db/PanelOi_db.db
 - Проект размещен в Git
 - Создана страница analytics_page.py
 - Создана система получения и обновления цен акций, запись в БД
+- Окно анализа: графики ОИ и цены для выбранного paper
 

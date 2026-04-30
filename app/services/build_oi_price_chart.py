@@ -4,6 +4,7 @@ from datetime import datetime
 from app.repository.oi_repository import OiRepository
 from app.repository.price_repository import PriceRepository
 
+# Данные для графиков ОИ и цены 
 
 def build_oi_price_chart_data(paper: str) -> dict:
     """

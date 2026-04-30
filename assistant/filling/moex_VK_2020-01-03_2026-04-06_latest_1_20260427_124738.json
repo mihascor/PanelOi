@@ -1,0 +1,97 @@
+{
+  "futoi": {
+    "metadata": {
+      "sess_id": {
+        "type": "int32"
+      },
+      "seqnum": {
+        "type": "int32"
+      },
+      "tradedate": {
+        "type": "date",
+        "bytes": 10,
+        "max_size": 0
+      },
+      "tradetime": {
+        "type": "time",
+        "bytes": 10,
+        "max_size": 0
+      },
+      "ticker": {
+        "type": "string",
+        "bytes": 36,
+        "max_size": 0
+      },
+      "clgroup": {
+        "type": "string",
+        "bytes": 9,
+        "max_size": 0
+      },
+      "pos": {
+        "type": "int64"
+      },
+      "pos_long": {
+        "type": "int64"
+      },
+      "pos_short": {
+        "type": "int64"
+      },
+      "pos_long_num": {
+        "type": "int64"
+      },
+      "pos_short_num": {
+        "type": "int64"
+      },
+      "systime": {
+        "type": "datetime",
+        "bytes": 19,
+        "max_size": 0
+      },
+      "trade_session_date": {
+        "type": "date",
+        "bytes": 10,
+        "max_size": 0
+      }
+    },
+    "columns": [
+      "sess_id",
+      "seqnum",
+      "tradedate",
+      "tradetime",
+      "ticker",
+      "clgroup",
+      "pos",
+      "pos_long",
+      "pos_short",
+      "pos_long_num",
+      "pos_short_num",
+      "systime",
+      "trade_session_date"
+    ],
+    "data": []
+  },
+  "futoi.dates": {
+    "metadata": {
+      "from": {
+        "type": "date",
+        "bytes": 30,
+        "max_size": 0
+      },
+      "till": {
+        "type": "date",
+        "bytes": 30,
+        "max_size": 0
+      }
+    },
+    "columns": [
+      "from",
+      "till"
+    ],
+    "data": [
+      [
+        null,
+        null
+      ]
+    ]
+  }
+}

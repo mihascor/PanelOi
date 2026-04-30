@@ -13,6 +13,7 @@ PanelOi
 │   │   └── price_repository.py
 │   ├── services
 │   │   ├── build_oi_analytics.py
+│   │   ├── build_oi_price_chart.py
 │   │   ├── build_oi_summary.py
 │   │   ├── load_logs_to_ui.py
 │   │   └── sync_price_history.py
@@ -26,6 +27,7 @@ PanelOi
 │       │   └── sidebar_widget.py
 │       ├── widgets
 │       └── windows
+│           ├── analysis_window.py
 │           └── main_window.py
 ├── storage
 │   ├── cache
